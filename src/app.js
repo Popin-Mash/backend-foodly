@@ -6,6 +6,8 @@ const cors = require("cors");
 const app = express();
 
 connectDB();
+// If you deploy on Heroku / Nginx / Cloudflare
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cors());
 app.use("/api/v1", routes);

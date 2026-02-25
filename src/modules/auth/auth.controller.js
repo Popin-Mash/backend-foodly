@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 
 const generate_otp = require("../../utils/otp_generate");
 const sendEmail = require("../../utils/smtp_function");
+const { recordFailure, resetAttempts, isBlocked } = require("../../middleware/loginAttemptStore");
 
 
 class AuthController {
@@ -40,6 +41,7 @@ class AuthController {
 
     }
     async loginUser(req, res) {
+        const key = req.ip; // or email for better security
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(req.body.email)) {
             return res.status(400).json({ status: false, message: 'Invalid email format' });
@@ -59,7 +61,11 @@ class AuthController {
             if (!isMatch) {
                 return res.status(400).json({ status: false, message: "Password is incorrect" });
             }
-
+            if (isBlocked(key)) {
+                return res.status(429).json({
+                    message: "Too many attempts. Wait 10 minutes."
+                });
+            }
             const userToken = jwt.sign({
                 id: user._id,
                 userType: user.userType,

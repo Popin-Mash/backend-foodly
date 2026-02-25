@@ -41,7 +41,9 @@ class AuthController {
 
     }
     async loginUser(req, res) {
-        const key = req.ip; // or email for better security
+
+        const key = req.ip; //* or email for better security
+        console.log("Login attempt from:", key);
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(req.body.email)) {
             return res.status(400).json({ status: false, message: 'Invalid email format' });

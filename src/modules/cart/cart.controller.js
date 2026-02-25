@@ -5,38 +5,95 @@ const Food = require("../food/food.model");
 class CartController {
     async addCartToProduct(req, res) {
         const userId = req.user.id;
-        const { productId, totalPrice, quantity, additives } = req.body;
-        let count;
+        const { productId, totalPrice, quantity, additives = [] } = req.body;
+
         try {
-            // * find user added cart by productId and user id
-            const existingProduct = await Cart.findOne({ userId, productId });
-            //* total of cart that user added
-            count = await Cart.countDocuments({ userId: userId });
-            //* if user want add more, we going to calculator total price and save() 
-            const qty = Math.max(1, Number(quantity));
+            const qty = Math.max(1, Number(quantity) || 1);
+
+            // normalize additives so order doesn't create duplicates
+            const normalizedAdditives = Array.isArray(additives)
+                ? additives.map(String).sort()
+                : [];
+
+            // Find existing cart item by userId + productId + additives
+            const existingProduct = await Cart.findOne({
+                userId,
+                productId,
+                additives: normalizedAdditives,
+            });
+
             if (existingProduct) {
-                existingProduct.totalPrice += totalPrice * quantity;
+                // IMPORTANT: decide what totalPrice means:
+                // If client sends "unit price", then multiply by qty.
+                // If client sends "line total", then just add totalPrice.
+                const lineTotal = Number(totalPrice) || 0;
+
                 existingProduct.quantity += qty;
+                existingProduct.totalPrice += lineTotal; // assume client sends line total
                 await existingProduct.save();
-                res.status(200).json({ status: true, message: "Item updated successfully", count: count });
-            }
-            else {
-                //*if empty card user can add new cart
-                const newCart = new Cart({
-                    userId,
-                    productId,
-                    totalPrice,
-                    quantity: qty,
-                    additives,
+
+                const count = await Cart.countDocuments({ userId });
+                return res.status(200).json({
+                    status: true,
+                    message: "Item updated successfully",
+                    count,
                 });
-                await newCart.save();
-                count = await Cart.countDocuments({ userId: userId });
-                res.status(201).json({ status: true, message: "Item added to cart successfully", count: count })
             }
+
+            const newCart = new Cart({
+                userId,
+                productId,
+                totalPrice: Number(totalPrice) || 0,
+                quantity: qty,
+                additives: normalizedAdditives,
+            });
+
+            await newCart.save();
+            const count = await Cart.countDocuments({ userId });
+
+            return res.status(201).json({
+                status: true,
+                message: "Item added to cart successfully",
+                count,
+            });
         } catch (error) {
-            res.status(500).json({ status: false, message: error.message });
+            return res.status(500).json({ status: false, message: error.message });
         }
     }
+    // async addCartToProduct(req, res) {
+    //     const userId = req.user.id;
+    //     const { productId, totalPrice, quantity, additives } = req.body;
+    //     let count;
+    //     try {
+    //         // * find user added cart by productId and user id
+    //         const existingProduct = await Cart.findOne({ userId, productId });
+    //         //* total of cart that user added
+    //         count = await Cart.countDocuments({ userId: userId });
+    //         //* if user want add more, we going to calculator total price and save() 
+    //         const qty = Math.max(1, Number(quantity));
+    //         if (existingProduct) {
+    //             existingProduct.totalPrice += totalPrice * quantity;
+    //             existingProduct.quantity += qty;
+    //             await existingProduct.save();
+    //             res.status(200).json({ status: true, message: "Item updated successfully", count: count });
+    //         }
+    //         else {
+    //             //*if empty card user can add new cart
+    //             const newCart = new Cart({
+    //                 userId,
+    //                 productId,
+    //                 totalPrice,
+    //                 quantity: qty,
+    //                 additives,
+    //             });
+    //             await newCart.save();
+    //             count = await Cart.countDocuments({ userId: userId });
+    //             res.status(201).json({ status: true, message: "Item added to cart successfully", count: count })
+    //         }
+    //     } catch (error) {
+    //         res.status(500).json({ status: false, message: error.message });
+    //     }
+    // }
     async removeCart(req, res) {
         const cartITtemId = req.params.id;
         const userId = req.user.id;
@@ -44,7 +101,7 @@ class CartController {
             //* __v id mongoose 
             //* remove cart by id of cart collection by __v and user id that has added this cart
             await Cart.deleteOne({ _id: cartITtemId, userId: userId });
-            res.status(200).json({ status: true, message: "Item removed successfully" });
+            res.status(200).json({ status: true, message: "Cart removed successfully" });
         } catch {
             res.status(500).json({ status: false, message: error.message });
         }

@@ -6,6 +6,7 @@ function getClientKey(req) {
 }
 
 //* General API limiter (safe for most routes)
+
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 200,
@@ -20,10 +21,11 @@ const apiLimiter = rateLimit({
     },
 });
 
-// Strict limiter for login/register/otp
+//* Strict limiter for login/register/otp
 const authLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000,
-    max: 5,
+    windowMs: 10 * 60 * 1000,//* 15 mins
+    max: 5,//* max requests
+
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => req.ip, // auth routes: IP based

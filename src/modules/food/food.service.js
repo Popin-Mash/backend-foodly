@@ -60,6 +60,14 @@ class FoodService {
             throw new Error({ status: false, message: e.message });
         }
     }
+    async getCategoryNameByFood(name) {
+        try {
+            const food = await foodModel.find({ category: name });
+            return food;
+        } catch (error) {
+            throw new Error({ status: false, message: error.message });
+        }
+    }
     async getRandomFood(code) {
         try {
             let foods;

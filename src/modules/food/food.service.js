@@ -199,5 +199,9 @@ class FoodService {
         }
     }
 
+    async fetchAllCategoriesByFood() {
+        return await foodModel.distinct("category");
+    }
+
 }
 module.exports = new FoodService();

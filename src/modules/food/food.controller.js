@@ -113,4 +113,14 @@ module.exports = {
             res.status(500).json({ status: false, message: error.message });
         }
     },
+
+    categoriesFetchByFood: async (req, res) => {
+        try {
+            const categories = await foodService.fetchAllCategoriesByFood();
+            res.status(200).json(categories);
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
 };

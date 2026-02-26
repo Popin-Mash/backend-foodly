@@ -11,6 +11,7 @@ foodRouter.delete("/delete/:id", foodController.deleteById);
 foodRouter.get("/find-by-restaurant/:id", foodController.getFoodsByRestaurant);
 foodRouter.get("/random-food/:code", foodController.getRandomFood);
 foodRouter.get("/food-all", foodController.findAllFoods);
+foodRouter.get("/food-categories", foodController.categoriesFetchByFood);
 
 
 //* Search ,and category ,code,

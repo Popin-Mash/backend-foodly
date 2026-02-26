@@ -124,8 +124,9 @@ module.exports = {
     },
 
     categoriesFetchByFood: async (req, res) => {
+        const restaurant = req.params.id;
         try {
-            const categories = await foodService.fetchAllCategoriesByFood();
+            const categories = await foodService.fetchAllCategoriesByFood(restaurant);
             res.status(200).json(categories);
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });

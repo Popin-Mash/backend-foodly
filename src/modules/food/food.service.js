@@ -207,8 +207,8 @@ class FoodService {
         }
     }
 
-    async fetchAllCategoriesByFood() {
-        return await foodModel.distinct("category");
+    async fetchAllCategoriesByFood(restaurant) {
+        return await foodModel.distinct("category",{restaurant: restaurant});
     }
 
 }

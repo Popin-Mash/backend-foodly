@@ -5,6 +5,7 @@ const { verifyTokenAndAuthorization } = require("../../middleware/verifyToken");
 const { apiLimiter, authLimiter } = require("../../middleware/rateLimit");
 
 router.post("/register", authLimiter, authController.createUser);
+router.post("/register/vendor", authLimiter, authController.createVendor);
 router.post("/login", authLimiter, authController.loginUser);
 
 module.exports = router;

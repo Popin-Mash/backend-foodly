@@ -40,6 +40,37 @@ class AuthController {
         }
 
     }
+    async createVendor(req, res) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(req.body.email)) {
+            return res.status(400).json({ error: 'Invalid email format' });
+        }
+        console.log("Incoming body:", req.body); // 🧠 check what you receive
+
+
+        if (req.body.password < 8) {
+            res.status(400).json({ status: false, message: "password should be at least 8 characters" })
+        }
+        const otp = generate_otp();
+        console.log("Generate OTP:", otp);
+        try {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(req.body.password, salt);
+            const newUser = await User.create({
+                username: req.body.username,
+                email: req.body.email,
+                userType: "Vendor",
+                password: hashedPassword,
+                otp: otp
+            });
+            await newUser.save();
+            sendEmail(newUser.email, otp);
+            res.status(201).json({ status: true, message: "Success create account" })
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+
+    }
     async loginUser(req, res) {
 
         const key = req.ip; //* or email for better security

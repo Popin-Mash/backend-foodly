@@ -12,6 +12,7 @@ foodRouter.get("/find-by-restaurant/:id", foodController.getFoodsByRestaurant);
 foodRouter.get("/random-food/:code", foodController.getRandomFood);
 foodRouter.get("/food-all", foodController.findAllFoods);
 foodRouter.get("/food-categories", foodController.categoriesFetchByFood);
+foodRouter.get("/category-name-by-food/:name", foodController.getCategoryNameByFood);
 
 
 //* Search ,and category ,code,

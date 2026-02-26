@@ -47,6 +47,15 @@ module.exports = {
             res.status(500).json({ message: error.message });
         }
     },
+    getCategoryNameByFood: async (req, res) => {
+        const name = req.params.name;
+        try {
+            const food = await foodService.getCategoryNameByFood(name);
+            res.status(200).json(food);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
     getRandomFood: async (req, res) => {
         const code = req.params.code;
         try {

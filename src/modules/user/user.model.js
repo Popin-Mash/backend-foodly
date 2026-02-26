@@ -43,7 +43,6 @@ const UserSchema = new mongoose.Schema({
         ref: "Address",
         require: false,
         default: "6910a737f985ca0296e56139",
-
     },
     userType: {
         type: String,

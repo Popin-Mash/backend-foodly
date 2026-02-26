@@ -8,7 +8,11 @@ const restaurantSchema = new mongoose.Schema({
   pickup: { type: Boolean, default: true },
   delivery: { type: Boolean, default: true },
   isAvailable: { type: Boolean, default: true },
-  owner: { type: String, required: true },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
   code: { type: String, required: true },
   logoUrl: { type: String, required: true },
   rating: { type: Number, min: 1, max: 5, default: 3 },

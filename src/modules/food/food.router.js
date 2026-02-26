@@ -20,5 +20,5 @@ foodRouter.get("/category/:category/:code", foodController.getFoodByCategoryAndC
 foodRouter.get("/random-code-food/:category/:code", foodController.getRandomFoodByCategoryAndCode);
 foodRouter.get("/recommendation/:code", foodController.getRandomFood);
 foodRouter.get("/category-food/list", foodController.findAllCategoryByFood);
-foodRouter.get("/restaurant-fo  od/:id", foodController.getRestaurantIdByFood);
+foodRouter.get("/restaurant-food/:id", foodController.getRestaurantIdByFood);
 module.exports = foodRouter;    

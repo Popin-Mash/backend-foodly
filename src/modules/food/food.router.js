@@ -1,7 +1,7 @@
 const express = require("express");
 const foodRouter = express.Router();
 const foodController = require("./food.controller");
-const { verifyVendor } = require("../../middleware/verifyToken");
+const { verifyVendor, verifyTokenAndAuthorization } = require("../../middleware/verifyToken");
 
 //* 
 foodRouter.post("/", verifyVendor, foodController.createFood);

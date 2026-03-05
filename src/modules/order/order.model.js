@@ -27,7 +27,7 @@ const OrderSchema = new mongoose.Schema({
     restaurantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
     restaurantCoords: [Number],
     recipientCoords: [Number],
-    driverId: { type: String, default: '' },
+    driverId: { type: String, default: '6902434dce9f9e83e63cef40' },
     rating: { type: Number, min: 1, max: 5, default: 3 },
     feedback: { type: String, },
     promoCode: { type: String },

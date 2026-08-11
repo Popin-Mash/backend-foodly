@@ -124,13 +124,47 @@ module.exports = {
     },
 
     categoriesFetchByFood: async (req, res) => {
-        const restaurant = req.params.id;
+        const foodId = req.params.id;
         try {
-            const categories = await foodService.fetchAllCategoriesByFood(restaurant);
+            const categories = await foodService.fetchCategoriesByFood(foodId);
             res.status(200).json(categories);
         } catch (error) {
             res.status(500).json({ status: false, message: error.message });
         }
     },
+    fetchAllCategoryRestaurant: async (req, res) => {
+        const foodId = req.params.id;
+        try {
+            const categories = await foodService.fetchRestaurantCategoriesByFood(foodId);
+            res.status(200).json(categories);
+        } catch (error) {
+            res.status(500).json({ status: false, message: error.message });
+        }
+    },
+
+    categoryBYFood: async (req, res) => {
+        const { restaurantId } = req.params;
+        console.log("params:", req.params);
+        try {
+            if (!restaurantId) {
+                return res.status(400).json({
+                    status: false,
+                    message: "restaurantId is required",
+                });
+            }
+            const categories = await foodService.categoryByRestaurant(restaurantId);
+
+            return res.status(200).json({
+                status: true,
+                count: categories.length,
+                data: categories,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: false,
+                message: error.message,
+            });
+        }
+    }
 
 };

@@ -13,8 +13,7 @@ foodRouter.get("/random-food/:code", foodController.getRandomFood);
 foodRouter.get("/food-all", foodController.findAllFoods);
 foodRouter.get("/food-categories/:id", foodController.categoriesFetchByFood);
 foodRouter.get("/category-name-by-food/:name", foodController.getCategoryNameByFood);
-
-
+foodRouter.get("/categories-by-restaurant/:restaurantId", foodController.categoryBYFood);
 //* Search ,and category ,code,
 foodRouter.get("/byCode/:code", foodController.getFoodByCode);
 foodRouter.get("/search/:search", foodController.searchFoods);

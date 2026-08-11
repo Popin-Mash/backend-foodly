@@ -1,4 +1,6 @@
 const foodModel = require("./food.model");
+const mongoose = require("mongoose");
+const Category = require("../category/category.model")
 
 class FoodService {
     async addFood(data) {
@@ -207,8 +209,66 @@ class FoodService {
         }
     }
 
-    async fetchAllCategoriesByFood(restaurant) {
-        return await foodModel.distinct("category",{restaurant: restaurant});
+    async fetchCategoriesByFood(foodId) {
+        try {
+            const food = await foodModel
+                .findById(foodId)
+                .populate("category", "title")
+                .populate("restaurant", "title address").lean();
+
+            if (!food) {
+                throw new Error("Food not found");
+            }
+            return {
+                foodId: food._id,
+                category: food.category,
+                restaurant: food.restaurant
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+    async fetchRestaurantCategoriesByFood(foodId) {
+        if (!mongoose.Types.ObjectId.isValid(foodId)) {
+            throw new Error("Invalid foodId");
+        }
+        const food = await foodModel.findById(foodId).select("restaurant").lean();
+        if (!food) {
+            throw new Error("Food not found");
+        }
+        const categoryIds = await foodModel.distinct("category", {
+            restaurant: food.restaurant,
+        });
+
+        const categories = await Category.find({
+            _id: { $in: categoryIds },
+        }).lean();
+        return {
+            restaurantId: food.restaurant,
+            totalCategories: categories.length,
+            categories,
+        };
+    }
+
+    async categoryByRestaurant(restaurantId) {
+        if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
+            throw new Error("Invalid restaurantId");
+        }
+
+        const categories = await foodModel.distinct("category", {
+            restaurant: restaurantId,
+        });
+
+        if (categories.length === 0) {
+            return [];
+        }
+        return categories;
+
+        // const categories = await Category.find({
+        //     _id: { $in: categoryIds },
+        // }).lean();
+
+        return categories;
     }
 
 }
